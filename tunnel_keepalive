@@ -6,10 +6,10 @@ createTunnel() {
 
     tries=0
 
-    util [ $tries -gt 100 ]; do
+    until [ $tries -gt 100 ]; do
         #生成随机端口，该端口将在服务器上使用
         n=60000
-        while [ $n -ge 60000 ] || [ $n -le 50000 ] || [ $free -ne 1 ]; do
+        while [ $n -ge 60000 ] || [ $n -le 50000 ]; do
           n=1$(</dev/urandom tr -dc 0-9 | dd bs=5 count=1 2>/dev/null)
           n=$((n-100000))
         done
