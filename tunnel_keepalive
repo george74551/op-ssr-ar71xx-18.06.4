@@ -1,26 +1,23 @@
 #!/bin/sh
 createTunnel() {
-    #生成随机端口，并检查该端口是否已被占用
-    n=65536
-    free=0
-    while [ $n -ge 65536 ] || [ $n -le 1024 ] || [ $free -ne 1 ]; do
-      n=1$(</dev/urandom tr -dc 0-9 | dd bs=5 count=1 2>/dev/null)
-      n=$((n-100000))
-      netstat -anp|grep $n
-      free=$?
-    done
+    # 得到WAN口IP地址
+    . /lib/functions/network.sh --source-only
+    network_get_ipaddr ip wan;
 
-    established=0
     tries=0
 
-    until [ $established -eq 1 ] || [ $tries -gt $TRIES ];
-    do
+    util [ $tries -gt 100 ]; do
+        #生成随机端口，该端口将在服务器上使用
+        n=60000
+        while [ $n -ge 60000 ] || [ $n -le 50000 ] || [ $free -ne 1 ]; do
+          n=1$(</dev/urandom tr -dc 0-9 | dd bs=5 count=1 2>/dev/null)
+          n=$((n-100000))
+        done
+
         /usr/bin/ssh -i /etc/dropbear/id_rsa -N -R $n:$ip:2222 peng@192.243.112.54 -p 28460
-        if [ $? -eq 0 ]; then
-            established=1
-            echo "Tunnel to jumpbox created successfully"
-        else
-            echo "An error occurred creating a tunnel to jumpbox. RC was $?"
+        if [ $? -eq 1 ]; then
+            tries=$((tries+1))
+            echo "An error occurred creating a tunnel to jumpbox. RC was $?, tried $tries times."
         fi
     done;
 }
