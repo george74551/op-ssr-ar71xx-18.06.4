@@ -1,0 +1,35 @@
+#!/bin/sh
+TRIES=4
+
+got=0
+fetches=0
+
+remoteBaseDir="https://raw.githubusercontent.com/gnu4cn/op-ssr-ar71xx-18.06.4/master/"
+script="update-actions"
+targetDir="/etc/init.d/"
+tmpDir="/tmp/"
+
+if [ -e $tmpDir$script ]; then
+    rm $tmpDir$script
+fi;
+
+until [ $got -eq 1 ] || [ $fetches -gt $TRIES ]; do
+    remoteScript=$remoteBaseDir$script
+
+    wget -4 --no-check-certificate -O $tmpDir$script $remoteScript
+    if [ $? -eq 0 ]; then
+        got=1
+    fi;
+    fetches=$((fetches+1))
+done;
+
+if [ $got -eq 1 ]; then
+    newMD5Sum=`/usr/bin/md5sum $tmpDir$script | awk '{print substr($1,1)}'`
+    oldMD5Sum=`/usr/bin/md5sum $targetDir$script | awk '{print substr($1,1)}'`
+
+    if [ "$newMD5Sum" != "$oldMD5Sum" ]; then
+        echo "File update-actions changed, now apply the changes."
+        mv $tmpDir$script $targetDir$script
+        /bin/chmod +x $targetDir$script
+    fi;
+fi;
