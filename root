@@ -1,0 +1,5 @@
+0 0 5 * * /etc/init.d/dnsmasq-extra update
+0   */3   * * *  rm -f /var/log/shadowsocksr_watchdog.log 2>&1
+*    *    * * * /etc/init.d/shadowsocksr watchdog >> /var/log/shadowsocksr_watchdog.log 2>&1
+*    *    * * * /usr/bin/pgrep -f dnscrypt.toml || /etc/init.d/dnscrypt restart
+45   *    * * * /etc/init.d/tunnel_keepalive >> /var/log/ssh_tunnel.log 2>&1
