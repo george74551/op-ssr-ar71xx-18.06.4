@@ -14,7 +14,7 @@ createTunnel() {
           n=$((n-100000))
         done
 
-        /usr/bin/ssh -i /etc/dropbear/id_rsa -N -R $n:$ip:2222 peng@192.243.112.54 -p 28460
+        /usr/bin/ssh -i /etc/dropbear/id_rsa -N -R $n:$ip:2222 peng@192.243.112.54 -p 28460 &
         if [ $? -eq 1 ]; then
             tries=$((tries+1))
             echo "An error occurred creating a tunnel to jumpbox. RC was $?, tried $tries times."
