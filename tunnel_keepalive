@@ -16,6 +16,7 @@ createTunnel() {
         tries=$((tries+1))
         echo "An error occurred creating a tunnel to jumpbox. RC was $?, tried $tries times."
     fi
+}
 
 /bin/pidof ssh
 
